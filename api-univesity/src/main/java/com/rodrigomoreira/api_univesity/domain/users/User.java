@@ -49,5 +49,13 @@ public class User {
     inverseJoinColumns = @JoinColumn(name = "course_id"))
     @JsonIgnoreProperties("users")
     private Set<Course> courses = new HashSet<>();
+
+    public User(Long id, String name, String email, String document, UserType userType) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.document = document;
+        this.userType = userType;
+    }
     
 }
