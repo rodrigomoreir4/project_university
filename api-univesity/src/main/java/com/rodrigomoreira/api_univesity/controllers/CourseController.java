@@ -31,7 +31,7 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses(){
+    public ResponseEntity<List<Course>> getAllCourses() throws Exception{
         List<Course> courses = courseService.getAllCourses();
         return new ResponseEntity<>(courses, HttpStatus.OK);
     }

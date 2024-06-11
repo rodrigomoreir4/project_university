@@ -28,8 +28,12 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    public List<Course> getAllCourses(){
-        return courseRepository.findAll();
+    public List<Course> getAllCourses() throws Exception{
+        List<Course> courses = courseRepository.findAll();
+        if(courses.isEmpty()){
+            throw new Exception("No courses found");
+        }
+        return courses;
     }
 
     public void deleteCourseById(Long id) throws Exception{
@@ -38,6 +42,5 @@ public class CourseService {
             user.getCourses().remove(course);
         }
         courseRepository.deleteById(course.getId());
-    }
-    
+    }  
 }

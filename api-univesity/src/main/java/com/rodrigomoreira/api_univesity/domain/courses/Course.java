@@ -37,5 +37,9 @@ public class Course {
     @ManyToMany(mappedBy = "courses")
     @JsonIgnoreProperties("courses")
     private Set<User> users = new HashSet<>();
+
+    public Course(String name) {
+        this.name = name;
+    }
     
 }
