@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rodrigomoreira.api_univesity.domain.courses.Course;
 import com.rodrigomoreira.api_univesity.services.CourseService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/courses")
 public class CourseController {
@@ -25,9 +27,14 @@ public class CourseController {
     private CourseService courseService;
 
     @GetMapping("/name") // ex: localhost:8080/courses/name?name=ADS
-    public Course getCourse(@RequestParam String name) throws Exception{
+    public Course getCourseByName(@RequestParam String name) throws Exception{
         String lowerCaseName = name.toLowerCase();
         return courseService.findCourseByName(lowerCaseName);
+    }
+
+    @GetMapping("/{id}")
+    public Course getCourseById(@PathVariable Long id) throws Exception{ 
+        return courseService.findCourseById(id);
     }
 
     @GetMapping
@@ -37,15 +44,15 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Course> createCourse(@RequestBody Course course) throws Exception {
+    public ResponseEntity<Course> createCourse(@RequestBody @Valid Course course) throws Exception {
         Course newCourse = courseService.createCourse(course);
-        return new ResponseEntity<>(newCourse, HttpStatus.OK);
+        return new ResponseEntity<>(newCourse, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCourse(@PathVariable Long id) throws Exception{
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) throws Exception{
         courseService.deleteCourseById(id);
-        return ResponseEntity.ok("Course deleted successfully");
+        return ResponseEntity.noContent().build();
     }
     
 }

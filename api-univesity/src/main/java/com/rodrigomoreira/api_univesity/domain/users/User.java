@@ -57,5 +57,11 @@ public class User {
         this.document = document;
         this.userType = userType;
     }
+
+    public User(String name, String email, String document) {
+        this.name = name;
+        this.email = email;
+        this.document = document;
+    }
     
 }

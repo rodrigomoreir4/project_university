@@ -13,7 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,6 @@ import lombok.Setter;
 @Entity
 @Table(name="courses")
 @Getter @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of="id")
 public class Course {
@@ -31,12 +30,18 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @NotEmpty
+    @Column(unique = true, nullable = false)
     private String name;
 
     @ManyToMany(mappedBy = "courses")
     @JsonIgnoreProperties("courses")
     private Set<User> users = new HashSet<>();
+
+    public Course(Long id, @NotEmpty String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Course(String name) {
         this.name = name;

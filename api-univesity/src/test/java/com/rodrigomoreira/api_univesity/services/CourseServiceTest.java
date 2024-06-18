@@ -1,7 +1,7 @@
 package com.rodrigomoreira.api_univesity.services;
 
-import static com.rodrigomoreira.api_univesity.courseCommon.CourseConstants.COURSE;
-import static com.rodrigomoreira.api_univesity.courseCommon.CourseConstants.INVALID_COURSE;
+import static com.rodrigomoreira.api_univesity.commons.CourseConstants.COURSE;
+import static com.rodrigomoreira.api_univesity.commons.CourseConstants.INVALID_COURSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +26,7 @@ import com.rodrigomoreira.api_univesity.domain.courses.Course;
 import com.rodrigomoreira.api_univesity.domain.users.User;
 import com.rodrigomoreira.api_univesity.repositories.CourseRepository;
 
-// método AAA
+//AAA
 
 @ExtendWith(MockitoExtension.class)
 public class CourseServiceTest {
@@ -46,9 +46,10 @@ public class CourseServiceTest {
 
     @Test
     void testCreateCourse_ErrorCase(){
-        when(courseRepository.save(INVALID_COURSE)).thenThrow((RuntimeException.class));
+        // when(courseRepository.save(INVALID_COURSE)).thenThrow((RuntimeException.class));
         assertThatThrownBy(() -> courseService.createCourse(INVALID_COURSE))
-            .isInstanceOf(RuntimeException.class);
+            .isInstanceOf(Exception.class)
+            .hasMessage("The course must have a name");
     }
 
     @Test

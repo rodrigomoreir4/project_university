@@ -1,4 +1,4 @@
-package com.rodrigomoreira.api_univesity.courseCommon;
+package com.rodrigomoreira.api_univesity.commons;
 
 import com.rodrigomoreira.api_univesity.domain.courses.Course;
 

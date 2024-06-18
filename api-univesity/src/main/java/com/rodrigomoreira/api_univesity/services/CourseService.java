@@ -9,6 +9,8 @@ import com.rodrigomoreira.api_univesity.domain.courses.Course;
 import com.rodrigomoreira.api_univesity.domain.users.User;
 import com.rodrigomoreira.api_univesity.repositories.CourseRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class CourseService {
     
@@ -16,15 +18,18 @@ public class CourseService {
     private CourseRepository courseRepository;
 
     public Course findCourseById(Long id) throws Exception {
-        return courseRepository.findCourseById(id).orElseThrow(() -> new Exception("Course not found"));
+        return courseRepository.findCourseById(id).orElseThrow(() -> new EntityNotFoundException("Course not found"));
     }
 
     public Course findCourseByName(String name) throws Exception{
-        return courseRepository.findCourseByName(name).orElseThrow(() -> new Exception("Course not found"));
+        return courseRepository.findCourseByName(name).orElseThrow(() -> new EntityNotFoundException("Course not found"));
     }
     
     public Course createCourse(Course course) throws Exception {
         course.setName(course.getName().toLowerCase());
+        if(course.getName().trim().isEmpty()){
+            throw new Exception("The course must have a name");
+        }
         return courseRepository.save(course);
     }
 
