@@ -15,7 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +23,6 @@ import lombok.Setter;
 @Entity(name="users")
 @Table(name="users")
 @Getter @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of="id")
 public class User {
@@ -56,6 +54,12 @@ public class User {
         this.email = email;
         this.document = document;
         this.userType = userType;
+    }
+
+    public User(String name, String email, String document, UserType userType) {
+        this.name = name;
+        this.email = email;
+        this.document = document;
     }
 
     public User(String name, String email, String document) {

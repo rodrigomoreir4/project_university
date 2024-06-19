@@ -26,8 +26,6 @@ import com.rodrigomoreira.api_univesity.domain.courses.Course;
 import com.rodrigomoreira.api_univesity.domain.users.User;
 import com.rodrigomoreira.api_univesity.repositories.CourseRepository;
 
-//AAA
-
 @ExtendWith(MockitoExtension.class)
 public class CourseServiceTest {
 
@@ -46,7 +44,6 @@ public class CourseServiceTest {
 
     @Test
     void testCreateCourse_ErrorCase(){
-        // when(courseRepository.save(INVALID_COURSE)).thenThrow((RuntimeException.class));
         assertThatThrownBy(() -> courseService.createCourse(INVALID_COURSE))
             .isInstanceOf(Exception.class)
             .hasMessage("The course must have a name");
