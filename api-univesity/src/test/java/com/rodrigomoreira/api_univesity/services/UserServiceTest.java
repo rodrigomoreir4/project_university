@@ -1,12 +1,16 @@
 package com.rodrigomoreira.api_univesity.services;
 
+import static com.rodrigomoreira.api_univesity.commons.CourseConstants.COURSE;
 import static com.rodrigomoreira.api_univesity.commons.UserConstants.INVALID_USER;
 import static com.rodrigomoreira.api_univesity.commons.UserConstants.USER_WITHOUT_ID;
 import static com.rodrigomoreira.api_univesity.commons.UserConstants.USER_WITH_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -36,6 +40,9 @@ public class UserServiceTest {
     @Mock
     private AtomicLong idCounter;
 
+    @Mock
+    private CourseService courseService;
+
     @Test
     void createUser_WithValidData_ReturnsUser() {
         when(userRepository.save(USER_WITHOUT_ID)).thenReturn(USER_WITHOUT_ID);
@@ -56,38 +63,36 @@ public class UserServiceTest {
     void getUser_ByExistingId_ReturnsUser() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(USER_WITH_ID));
 
-        Optional<User> user = userService.getUser(1L);
+        User user = userService.getUser(1L);
 
-        assertThat(user).isNotEmpty();
-        assertThat(user.get()).isEqualTo(USER_WITH_ID);
+        assertThat(user).isEqualTo(USER_WITH_ID);
     }
 
     @Test
     void getUser_ByUnexistingId_ReturnsEmpty() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(USER_WITH_ID.getId())).thenReturn(Optional.empty());
 
-        Optional<User> user = userService.getUser(1L);
-
-        assertThat(user).isEmpty();
+        assertThatThrownBy(() -> userService.getUser(USER_WITH_ID.getId()))
+                .isInstanceOf(Exception.class)
+                .hasMessage("User not found");
     }
 
     @Test
     void getUser_ByExistingName_ReturnsUser() throws Exception {
-        when(userService.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.of(USER_WITH_ID));
+        when(userRepository.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.of(USER_WITH_ID));
 
-        Optional<User> user = userService.findUserByDocument(USER_WITH_ID.getDocument());
+        User user = userService.findUserByDocument(USER_WITH_ID.getDocument());
 
-        assertThat(user).isNotEmpty();
-        assertThat(user.get()).isEqualTo(USER_WITH_ID);
+        assertThat(user).isEqualTo(USER_WITH_ID);
     }
 
     @Test
     void getUser_ByUnexistingName_ReturnsEmpty() throws Exception{
-        when(userService.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.empty());
+        when(userRepository.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.empty());
 
-        Optional<User> user = userService.findUserByDocument(USER_WITH_ID.getDocument());
-
-        assertThat(user).isEmpty();
+        assertThatThrownBy(() -> userService.findUserByDocument(USER_WITH_ID.getDocument()))
+                .isInstanceOf(Exception.class)
+                .hasMessage("User not found");
     }
 
     @Test
@@ -102,9 +107,61 @@ public class UserServiceTest {
     @Test
     void testGetAllUsers_ErrorCase(){
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
-        List<User> result = userService.getAllUsers();
+        assertThatThrownBy(() -> userService.getAllUsers())
+                .isInstanceOf(Exception.class)
+                .hasMessage("No users found");
+    }
 
-        assertThat(result).isEmpty();
+    @Test
+    void testAddCourse_SuccessfulCase() throws Exception{
+        when(userRepository.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.of(USER_WITH_ID));
+        when(courseService.findCourseByName(anyString())).thenReturn(COURSE);
+        when(userRepository.save(USER_WITH_ID)).thenReturn(USER_WITH_ID);
+
+        User updateUser = userService.addCourse(USER_WITH_ID.getDocument(), COURSE.getName());
+
+        verify(userRepository).findUserByDocument(USER_WITH_ID.getDocument());
+        verify(courseService).findCourseByName(COURSE.getName());
+        verify(userRepository).save(USER_WITH_ID);
+
+        assert updateUser.getCourses().contains(COURSE);
+    }
+
+    @Test
+    void testRemoveCourse_SuccessfulCase() throws Exception {
+        USER_WITH_ID.getCourses().add(COURSE);
+
+        when(userRepository.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.of(USER_WITH_ID));
+        when(courseService.findCourseByName(anyString())).thenReturn(COURSE);
+        when(userRepository.save(USER_WITH_ID)).thenReturn(USER_WITH_ID);
+
+        User updateUser = userService.removeCourse(USER_WITH_ID.getDocument(), COURSE.getName());
+
+        assertFalse(updateUser.getCourses().contains(COURSE));
+    }
+
+    @Test
+    void testUpdateUser__ErrorCase1() throws Exception{
+        when(userRepository.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.addCourse(USER_WITH_ID.getDocument(), COURSE.getName()))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("User not found");
+    }
+
+    @Test
+    void testUpdateUser__ErrorCase2() throws Exception{ 
+        when(userRepository.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.of(USER_WITH_ID));
+        when(courseService.findCourseByName(anyString())).thenThrow(new RuntimeException("Course not found"));
+
+        assertThatThrownBy(() -> userService.addCourse(USER_WITH_ID.getDocument(), COURSE.getName()))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Course not found");
+    }
+
+    @Test
+    void testUpdateUser__ErrorCase3() throws Exception{
+        assertThatThrownBy(() -> userService.addCourse(USER_WITH_ID.getDocument(), COURSE.getName())).isInstanceOf(RuntimeException.class);
     }
 
     @Test
