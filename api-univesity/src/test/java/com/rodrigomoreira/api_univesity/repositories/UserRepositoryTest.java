@@ -5,6 +5,9 @@ import static com.rodrigomoreira.api_univesity.commons.UserConstants.USER_WITH_I
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +27,7 @@ public class UserRepositoryTest {
 
     @AfterEach
     void afterEach(){
-        USER_WITH_ID.setId(null);
+        USER_WITH_ID.setId(1L);
     }
     
     @Test
@@ -52,6 +55,53 @@ public class UserRepositoryTest {
 
         assertThatThrownBy(() -> userRepository.save(user))
             .isInstanceOf(RuntimeException.class);
+
+    }
+
+    @Test
+    void getUser_ByExistingId_ReturnUser() {
+        User user = testEntityManager.persistAndFlush(USER_WITH_ID);
+
+        Optional<User> userOpt = userRepository.findById(user.getId());
+
+        assertThat(userOpt).isNotEmpty();
+        assertThat(userOpt.get()).isEqualTo(user);
+    }
+
+    @Test
+    void getUser_ByUnexistingId_ReturnsEmpty() {
+        
+        Optional<User> userOpt = userRepository.findById(1L);
+        
+        assertThat(userOpt).isEmpty();
+    }
+
+    @Test
+    void findAll_WithExistingUsers_ReturnsUsers(){
+        testEntityManager.persistAndFlush(USER_WITH_ID);
+
+        List<User> users = userRepository.findAll();
+        
+        assertThat(users).isNotEmpty();
+        assertThat(users).hasSize(1);
+        assertThat(users).contains(USER_WITH_ID);
+    }
+
+    @Test
+    void findAll_WithNoUsers_ReturnEmptyList(){
+        List<User> users = userRepository.findAll();
+
+        assertThat(users).isEmpty();
+    }
+
+    @Test
+    void removeUser_WithExistingId_RemovesUserFromDatabase() {
+        User user = testEntityManager.persistAndFlush(USER_WITH_ID);
+
+        userRepository.deleteById(user.getId());
+
+        User removedUser = testEntityManager.find(User.class, user.getId());
+        assertThat(removedUser).isNull();
 
     }
 
