@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,14 +31,19 @@ public class User {
     @Id
     private Long id;
 
+    @NotEmpty
+    @Column(nullable = false)
     private String name;
 
-    @Column(unique=true)
+    @NotEmpty
+    @Column(unique=true, nullable = false)
     private String email;
 
-    @Column(unique=true)
+    @NotEmpty
+    @Column(unique=true, nullable = false)
     private String document;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserType userType;
 

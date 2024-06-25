@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -43,8 +44,22 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> validationException(MethodArgumentNotValidException exception){
-        String message = "The course must have a name";
-        ExceptionDTO exceptionDTO = new ExceptionDTO(message);
+        
+        String message = exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
+        String newMessage = "";
+        
+        if(message.contains("domain.users")){
+            newMessage = "Fill in all fields";
+        } else if (message.contains("domain.courses")){
+            newMessage = "The course must have a name";
+        }
+        ExceptionDTO exceptionDTO = new ExceptionDTO(newMessage);
+        return ResponseEntity.badRequest().body(exceptionDTO);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> emptyUserType(HttpMessageNotReadableException exception){
+        ExceptionDTO exceptionDTO = new ExceptionDTO("User type cannot be empty");
         return ResponseEntity.badRequest().body(exceptionDTO);
     }
 

@@ -19,6 +19,8 @@ import com.rodrigomoreira.api_univesity.domain.users.User;
 import com.rodrigomoreira.api_univesity.infra.UpdateRequest;
 import com.rodrigomoreira.api_univesity.services.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -27,7 +29,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user){
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user){
         User newUser = userService.createUser(user);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
