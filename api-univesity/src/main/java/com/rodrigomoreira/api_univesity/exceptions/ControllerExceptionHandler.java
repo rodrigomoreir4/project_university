@@ -33,7 +33,9 @@ public class ControllerExceptionHandler {
             newMessage = "Document already registered";
         } else if (message.contains("COURSES(NAME")){
             newMessage = "Course already registered";
-        } 
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+        }
         
         ExceptionDTO exceptionDTO = new ExceptionDTO(newMessage);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionDTO);

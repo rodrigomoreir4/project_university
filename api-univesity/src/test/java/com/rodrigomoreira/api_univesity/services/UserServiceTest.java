@@ -114,7 +114,7 @@ public class UserServiceTest {
 
     @Test
     void testAddCourse_SuccessfulCase() throws Exception{
-        when(userRepository.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.of(USER_WITH_ID));
+        when(userRepository.findUserByDocument(anyString())).thenReturn(Optional.of(USER_WITH_ID));
         when(courseService.findCourseByName(anyString())).thenReturn(COURSE);
         when(userRepository.save(USER_WITH_ID)).thenReturn(USER_WITH_ID);
 
@@ -131,7 +131,7 @@ public class UserServiceTest {
     void testRemoveCourse_SuccessfulCase() throws Exception {
         USER_WITH_ID.getCourses().add(COURSE);
 
-        when(userRepository.findUserByDocument(USER_WITH_ID.getDocument())).thenReturn(Optional.of(USER_WITH_ID));
+        when(userRepository.findUserByDocument(anyString())).thenReturn(Optional.of(USER_WITH_ID));
         when(courseService.findCourseByName(anyString())).thenReturn(COURSE);
         when(userRepository.save(USER_WITH_ID)).thenReturn(USER_WITH_ID);
 
