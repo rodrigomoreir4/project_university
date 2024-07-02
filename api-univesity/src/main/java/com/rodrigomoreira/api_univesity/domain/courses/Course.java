@@ -38,7 +38,7 @@ public class Course {
     @JsonIgnoreProperties("courses")
     private Set<User> users = new HashSet<>();
 
-    public Course(Long id, @NotEmpty String name) {
+    public Course(Long id, String name) {
         this.id = id;
         this.name = name;
     }
